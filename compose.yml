@@ -1,0 +1,44 @@
+version: '3.3'
+
+services:
+  wordpress:
+    image: wordpress:latest
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      VIRTUAL_HOST: linox.shop
+      LETSENCRYPT_HOST: linox.shop
+    ports:
+      - 8080:80
+    volumes:
+      - ./wordpress:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - wpnet
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wpnet
+
+  webserver:
+    image: nginx:1.22.1
+    ports:
+      - 80:80
+    networks:
+      - wpnet
+
+networks:
+  wpnet:
+
+volumes:
+  db_data:
